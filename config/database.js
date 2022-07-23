@@ -1,15 +1,35 @@
 module.exports = ({ env }) => ({
-  defaultConnection: 'default',
+  defaultConnection: "default",
   connections: {
     default: {
-      connector: 'bookshelf',
+      connector: "bookshelf",
       settings: {
-        client: 'sqlite',
-        filename: env('DATABASE_FILENAME', '.tmp/data.db'),
+        client: "sqlite",
+        filename: env("DATABASE_FILENAME", ".tmp/data.db"),
       },
       options: {
         useNullAsDefault: true,
       },
     },
+  },
+});
+
+const parse = require("pg-connection-string").parse;
+const config = parse(process.env.DATABASE_URL);
+
+module.exports = ({ env }) => ({
+  connection: {
+    client: "postgres",
+    connection: {
+      host: config.host,
+      port: config.port,
+      database: config.database,
+      user: config.user,
+      password: config.password,
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    },
+    debug: false,
   },
 });
